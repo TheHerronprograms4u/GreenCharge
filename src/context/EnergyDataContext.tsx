@@ -43,13 +43,13 @@ const EnergyDataContext = createContext<EnergyDataContextType | undefined>(undef
 export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [deviceId, setDeviceId] = useState<string>('GREENCHARGE-001');
   const [freshnessTimeoutSec, setFreshnessTimeoutSec] = useState<number>(5);
-  const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(true);
+  const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>('INITIALIZING');
   const [lastUpdatedTime, setLastUpdatedTime] = useState<Date | null>(null);
   const [secondsSinceLastUpdate, setSecondsSinceLastUpdate] = useState<number>(0);
   const [latestReading, setLatestReading] = useState<EnergyReading | null>(null);
   const [readingsHistory, setReadingsHistory] = useState<EnergyReading[]>([]);
-  const [rawUartMessage, setRawUartMessage] = useState<string>('DATA,2.350,0.120,0.282');
+  const [rawUartMessage, setRawUartMessage] = useState<string>('DATA,0.000,0.000,0.000');
   const [supabaseStatus, setSupabaseStatus] = useState<'CONNECTED' | 'DISCONNECTED' | 'UNCONFIGURED'>('UNCONFIGURED');
 
   // Logs
@@ -197,15 +197,18 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     []
   );
 
-  // Initialize with seed data
+  // Initialize with seed data only if no readings received yet
   useEffect(() => {
-    const initialData = telemetrySimulator.generateInitialHistory(deviceId, 40);
-    setReadingsHistory(initialData);
-    if (initialData.length > 0) {
-      const latest = initialData[initialData.length - 1];
-      setLatestReading(latest);
-      setLastUpdatedTime(new Date(latest.created_at));
-      setConnectionState('ONLINE');
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      const initialData = telemetrySimulator.generateInitialHistory(deviceId, 30);
+      setReadingsHistory(initialData);
+      if (initialData.length > 0) {
+        const latest = initialData[initialData.length - 1];
+        setLatestReading(latest);
+        setLastUpdatedTime(new Date(latest.created_at));
+        setConnectionState('ONLINE');
+      }
     }
   }, [deviceId]);
 
@@ -240,24 +243,14 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return () => clearInterval(interval);
   }, [lastUpdatedTime, freshnessTimeoutSec, connectionState, addActivityLog]);
 
-  // Live Simulator Loop
+  // Live Local UI Simulator Loop (Only updates UI when manually enabled in settings/navbar)
   useEffect(() => {
     if (!isSimulatorActive) return;
 
     const simInterval = setInterval(() => {
       const { reading, rawUart } = telemetrySimulator.generateReading(deviceId);
       processIncomingReading(reading, rawUart);
-
-      // Optionally try pushing to Supabase if configured
-      const supabase = getSupabaseClient();
-      if (supabase) {
-        insertEnergyReading(reading).then((success) => {
-          if (success) {
-            setSupabaseStatus('CONNECTED');
-          }
-        });
-      }
-    }, 3000); // Send new reading every 3 seconds
+    }, 3000);
 
     return () => clearInterval(simInterval);
   }, [isSimulatorActive, deviceId, processIncomingReading]);
