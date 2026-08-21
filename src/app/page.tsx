@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EnergyDataProvider } from '@/context/EnergyDataContext';
 import { HeaderNavbar } from '@/components/HeaderNavbar';
 import { DashboardView } from '@/components/DashboardView';
@@ -8,10 +8,26 @@ import { AnalyticsView } from '@/components/AnalyticsView';
 import { DeviceView } from '@/components/DeviceView';
 import { LogsView } from '@/components/LogsView';
 import { SettingsView } from '@/components/SettingsView';
-import { Zap, ShieldCheck, Terminal, Cpu } from 'lucide-react';
+import { Zap, ShieldCheck, Activity } from 'lucide-react';
 
 function MainContent() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [mounted, setMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#07090e] flex flex-col items-center justify-center space-y-4 font-mono">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 animate-pulse">
+          <Zap className="h-6 w-6" />
+        </div>
+        <div className="text-sm text-slate-300 font-bold tracking-wider">LOADING DAGITAB IoT DASHBOARD...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#07090e] bg-tech-grid text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-black">
