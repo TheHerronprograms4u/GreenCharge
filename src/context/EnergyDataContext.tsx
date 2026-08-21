@@ -41,7 +41,7 @@ interface EnergyDataContextType {
 const EnergyDataContext = createContext<EnergyDataContextType | undefined>(undefined);
 
 export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [deviceId, setDeviceId] = useState<string>('DAGITAB-001');
+  const [deviceId, setDeviceId] = useState<string>('GREENCHARGE-001');
   const [freshnessTimeoutSec, setFreshnessTimeoutSec] = useState<number>(5);
   const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>('INITIALIZING');
@@ -60,7 +60,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       type: 'info',
       title: 'Dashboard Initialized',
       message: 'DAGITAB Cloud Monitoring System initialized.',
-      deviceId: 'DAGITAB-001',
+      deviceId: 'GREENCHARGE-001',
     },
     {
       id: 'log-2',
@@ -68,7 +68,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       type: 'success',
       title: 'UART Gateway Synced',
       message: 'ESP8266 NodeMCU established communication pipeline with Arduino UNO.',
-      deviceId: 'DAGITAB-001',
+      deviceId: 'GREENCHARGE-001',
     },
   ]);
 
@@ -132,7 +132,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Device Info
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
-    deviceId: 'DAGITAB-001',
+    deviceId: 'GREENCHARGE-001',
     gateway: 'ESP8266 NodeMCU ESP-12E',
     sensorController: 'Arduino UNO (ATmega328P)',
     sensor: 'MAX471 High-Side Current & Voltage Sensor',
@@ -270,8 +270,11 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (data && data.length > 0) {
         setReadingsHistory(data);
         const newest = data[data.length - 1];
+        if (newest.device_id) {
+          setDeviceId(newest.device_id);
+        }
         processIncomingReading(newest);
-        addActivityLog('success', 'Supabase Synced', `Loaded ${data.length} historical readings from database.`);
+        addActivityLog('success', 'Supabase Synced', `Loaded ${data.length} historical readings from database (Device: ${newest.device_id || 'Node'}).`);
       }
     });
 
@@ -283,12 +286,15 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         { event: 'INSERT', schema: 'public', table: 'energy_readings' },
         (payload) => {
           const newReading = payload.new as EnergyReading;
-          if (newReading.device_id === deviceId || !newReading.device_id) {
+          if (newReading) {
+            if (newReading.device_id && newReading.device_id !== deviceId) {
+              setDeviceId(newReading.device_id);
+            }
             processIncomingReading(newReading);
             addActivityLog(
               'info',
-              'Realtime Data Inserted',
-              `Received live Supabase insert: V=${newReading.voltage}V, I=${newReading.current}A, P=${newReading.power}W`
+              'Realtime Data Received',
+              `Live payload from ${newReading.device_id || 'Hardware Node'}: V=${newReading.voltage}V, I=${newReading.current}A, P=${newReading.power}W`
             );
           }
         }

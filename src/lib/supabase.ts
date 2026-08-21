@@ -42,7 +42,7 @@ export function resetSupabaseClient(): void {
 }
 
 export async function fetchLatestReadings(
-  deviceId: string = 'DAGITAB-001',
+  deviceId: string = 'GREENCHARGE-001',
   limit: number = 100
 ): Promise<EnergyReading[]> {
   const client = getSupabaseClient();
@@ -77,7 +77,7 @@ export async function insertEnergyReading(
   try {
     const { error } = await client.from('energy_readings').insert([
       {
-        device_id: reading.device_id || 'DAGITAB-001',
+        device_id: reading.device_id || 'GREENCHARGE-001',
         voltage: reading.voltage,
         current: reading.current,
         power: reading.power,

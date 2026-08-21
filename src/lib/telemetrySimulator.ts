@@ -12,7 +12,7 @@ export class HardwareTelemetrySimulator {
     0.95, 0.9, 0.88, 0.92, 1.0, 1.05, 1.1, 1.15, 1.08, 1.02
   ];
 
-  public generateReading(deviceId: string = 'DAGITAB-001'): {
+  public generateReading(deviceId: string = 'GREENCHARGE-001'): {
     reading: EnergyReading;
     rawUart: string;
   } {

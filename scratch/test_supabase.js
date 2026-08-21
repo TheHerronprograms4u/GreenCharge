@@ -5,22 +5,21 @@ const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 
 const supabase = createClient(url, key);
 
-async function testInsert() {
-  console.log('Testing insert into energy_readings...');
-  const { data, error } = await supabase.from('energy_readings').insert([
-    {
-      device_id: 'GREENCHARGE-001',
-      voltage: 2.350,
-      current: 0.120,
-      power: 0.282,
-    }
-  ]).select();
+async function inspectRows() {
+  const { data, error } = await supabase
+    .from('energy_readings')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(10);
 
   if (error) {
-    console.error('Insert error:', error.message);
+    console.error('Query error:', error.message);
   } else {
-    console.log('Insert SUCCESS:', data);
+    console.log('Latest 10 rows in Supabase:');
+    data.forEach((row) => {
+      console.log(`ID: ${row.id} | device_id: "${row.device_id}" | V: ${row.voltage} | I: ${row.current} | P: ${row.power} | Time: ${row.created_at}`);
+    });
   }
 }
 
-testInsert();
+inspectRows();
