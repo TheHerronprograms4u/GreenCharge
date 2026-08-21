@@ -41,7 +41,7 @@ interface EnergyDataContextType {
 const EnergyDataContext = createContext<EnergyDataContextType | undefined>(undefined);
 
 export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [deviceId, setDeviceId] = useState<string>('GREENCHARGE-001');
+  const [deviceId, setDeviceId] = useState<string>('DAGITAB-001');
   const [freshnessTimeoutSec, setFreshnessTimeoutSec] = useState<number>(5);
   const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>('INITIALIZING');
@@ -59,8 +59,8 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       timestamp: new Date(Date.now() - 60000).toISOString(),
       type: 'info',
       title: 'Dashboard Initialized',
-      message: 'GREENCHARGE Cloud Monitoring System initialized.',
-      deviceId: 'GREENCHARGE-001',
+      message: 'DAGITAB Cloud Monitoring System initialized.',
+      deviceId: 'DAGITAB-001',
     },
     {
       id: 'log-2',
@@ -68,7 +68,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       type: 'success',
       title: 'UART Gateway Synced',
       message: 'ESP8266 NodeMCU established communication pipeline with Arduino UNO.',
-      deviceId: 'GREENCHARGE-001',
+      deviceId: 'DAGITAB-001',
     },
   ]);
 
@@ -121,7 +121,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     },
     {
       id: 'dashboard',
-      name: 'GREENCHARGE Dashboard',
+      name: 'DAGITAB Dashboard',
       tech: 'Next.js App Engine',
       status: 'ONLINE',
       latencyMs: 4,
@@ -132,7 +132,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Device Info
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
-    deviceId: 'GREENCHARGE-001',
+    deviceId: 'DAGITAB-001',
     gateway: 'ESP8266 NodeMCU ESP-12E',
     sensorController: 'Arduino UNO (ATmega328P)',
     sensor: 'MAX471 High-Side Current & Voltage Sensor',
@@ -225,7 +225,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           addActivityLog(
             'offline',
             'Device Offline Timeout',
-            `No Telemetry received for >${freshnessTimeoutSec} seconds. Marking device GREENCHARGE-001 as OFFLINE.`
+            `No Telemetry received for >${freshnessTimeoutSec} seconds. Marking device DAGITAB-001 as OFFLINE.`
           );
 
           // Update pipeline stages to indicate error

@@ -20,7 +20,7 @@ export const DeviceView: React.FC = () => {
   const { deviceInfo, connectionState, rawUartMessage, simulateIncomingData } = useEnergyData();
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
     '[SYSTEM INIT] ESP8266 NodeMCU v1.4.2 Booting...',
-    '[WIFI STATUS] Connected to GREENCHARGE_AP (RSSI: -52 dBm)',
+    '[WIFI STATUS] Connected to DAGITAB_AP (RSSI: -52 dBm)',
     '[UART INIT] SoftwareSerial RX:D1, TX:D2 @ 9600 Baud',
     '[SENSOR CONNECTED] MAX471 Current & Voltage Sensor initialized',
     '[SUPABASE REALTIME] Connected to WSS wss://supabase.co/realtime/v1',

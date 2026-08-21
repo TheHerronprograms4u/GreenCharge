@@ -12,7 +12,7 @@ export class HardwareTelemetrySimulator {
     0.95, 0.9, 0.88, 0.92, 1.0, 1.05, 1.1, 1.15, 1.08, 1.02
   ];
 
-  public generateReading(deviceId: string = 'GREENCHARGE-001'): {
+  public generateReading(deviceId: string = 'DAGITAB-001'): {
     reading: EnergyReading;
     rawUart: string;
   } {
@@ -42,7 +42,7 @@ export class HardwareTelemetrySimulator {
     return { reading, rawUart };
   }
 
-  public generateInitialHistory(deviceId: string = 'GREENCHARGE-001', count: number = 40): EnergyReading[] {
+  public generateInitialHistory(deviceId: string = 'DAGITAB-001', count: number = 40): EnergyReading[] {
     const readings: EnergyReading[] = [];
     const now = Date.now();
     const intervalMs = 3000; // 3 sec interval

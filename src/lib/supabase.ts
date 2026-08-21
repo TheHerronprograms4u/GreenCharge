@@ -5,8 +5,8 @@ let cachedClient: SupabaseClient | null = null;
 
 export function getSupabaseCredentials(): { url: string; key: string } {
   if (typeof window !== 'undefined') {
-    const customUrl = localStorage.getItem('GREENCHARGE_SUPABASE_URL');
-    const customKey = localStorage.getItem('GREENCHARGE_SUPABASE_ANON_KEY');
+    const customUrl = localStorage.getItem('DAGITAB_SUPABASE_URL') || localStorage.getItem('GREENCHARGE_SUPABASE_URL');
+    const customKey = localStorage.getItem('DAGITAB_SUPABASE_ANON_KEY') || localStorage.getItem('GREENCHARGE_SUPABASE_ANON_KEY');
     if (customUrl && customKey) {
       return { url: customUrl, key: customKey };
     }
@@ -42,7 +42,7 @@ export function resetSupabaseClient(): void {
 }
 
 export async function fetchLatestReadings(
-  deviceId: string = 'GREENCHARGE-001',
+  deviceId: string = 'DAGITAB-001',
   limit: number = 100
 ): Promise<EnergyReading[]> {
   const client = getSupabaseClient();
@@ -52,7 +52,6 @@ export async function fetchLatestReadings(
     const { data, error } = await client
       .from('energy_readings')
       .select('*')
-      .eq('device_id', deviceId)
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -78,7 +77,7 @@ export async function insertEnergyReading(
   try {
     const { error } = await client.from('energy_readings').insert([
       {
-        device_id: reading.device_id,
+        device_id: reading.device_id || 'DAGITAB-001',
         voltage: reading.voltage,
         current: reading.current,
         power: reading.power,
@@ -97,13 +96,13 @@ export async function insertEnergyReading(
   }
 }
 
-export const SUPABASE_SQL_SETUP = `-- GREENCHARGE Database Setup Script for Supabase
+export const SUPABASE_SQL_SETUP = `-- DAGITAB Database Setup Script for Supabase
 -- Run this in your Supabase SQL Editor to create the table and enable Realtime
 
 -- 1. Create energy_readings table
 CREATE TABLE IF NOT EXISTS public.energy_readings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id TEXT NOT NULL DEFAULT 'GREENCHARGE-001',
+    device_id TEXT NOT NULL DEFAULT 'DAGITAB-001',
     voltage NUMERIC(8, 3) NOT NULL,
     current NUMERIC(8, 3) NOT NULL,
     power NUMERIC(8, 3) NOT NULL,

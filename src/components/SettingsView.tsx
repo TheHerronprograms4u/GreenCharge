@@ -47,8 +47,8 @@ export const SettingsView: React.FC = () => {
   const handleSaveSupabaseConfig = (e: React.FormEvent) => {
     e.preventDefault();
     if (typeof window !== 'undefined') {
-      localStorage.setItem('GREENCHARGE_SUPABASE_URL', supabaseUrl.trim());
-      localStorage.setItem('GREENCHARGE_SUPABASE_ANON_KEY', supabaseAnonKey.trim());
+      localStorage.setItem('DAGITAB_SUPABASE_URL', supabaseUrl.trim());
+      localStorage.setItem('DAGITAB_SUPABASE_ANON_KEY', supabaseAnonKey.trim());
       resetSupabaseClient();
       setSaveSuccess(true);
       addActivityLog('success', 'Supabase Config Updated', 'Saved new Supabase API credentials.');
@@ -58,6 +58,8 @@ export const SettingsView: React.FC = () => {
 
   const handleClearSupabaseConfig = () => {
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('DAGITAB_SUPABASE_URL');
+      localStorage.removeItem('DAGITAB_SUPABASE_ANON_KEY');
       localStorage.removeItem('GREENCHARGE_SUPABASE_URL');
       localStorage.removeItem('GREENCHARGE_SUPABASE_ANON_KEY');
       setSupabaseUrl('');

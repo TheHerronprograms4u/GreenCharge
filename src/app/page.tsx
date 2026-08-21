@@ -35,13 +35,13 @@ function MainContent() {
               <Zap className="h-4 w-4" />
             </div>
             <div>
-              <span className="font-bold text-white tracking-wider">GREENCHARGE</span>
+              <span className="font-bold text-white tracking-wider">DAGITAB</span>
               <span className="ml-2 text-[10px] text-slate-500">Arduino UNO + MAX471 + ESP8266 + Supabase</span>
             </div>
           </div>
 
           <div className="flex items-center space-x-4 text-[11px]">
-            <span>NODE: <strong className="text-slate-300">GREENCHARGE-001</strong></span>
+            <span>NODE: <strong className="text-slate-300">DAGITAB-001</strong></span>
             <span>|</span>
             <span>PROTOCOL: <strong className="text-cyan-400">UART 9600 BAUD</strong></span>
             <span>|</span>

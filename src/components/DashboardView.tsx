@@ -40,7 +40,7 @@ export const DashboardView: React.FC = () => {
               <span className="text-xs font-mono text-slate-500">NODE: {deviceId}</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-              GREENCHARGE <span className="text-emerald-400 font-extralight text-2xl sm:text-4xl">Cloud</span>
+              DAGITAB <span className="text-emerald-400 font-extralight text-2xl sm:text-4xl">Cloud</span>
             </h1>
             <p className="mt-1.5 text-sm sm:text-base font-medium text-slate-400">
               Intelligent Commercial IoT Energy Monitoring System (Arduino UNO + MAX471 + ESP8266)
