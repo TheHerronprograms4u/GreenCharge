@@ -2,12 +2,11 @@
 
 import React from 'react';
 import { useEnergyData } from '@/context/EnergyDataContext';
-import { Cpu, Wifi, Server, Radio, ShieldCheck, Clock, Network } from 'lucide-react';
+import { Cpu, Wifi, Server, Radio, ShieldCheck, Clock, Network, Zap, Sparkles } from 'lucide-react';
 
 export const DeviceInfoCard: React.FC = () => {
   const { deviceInfo } = useEnergyData();
 
-  // Convert uptime seconds to formatted string
   const formatUptime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -16,48 +15,50 @@ export const DeviceInfoCard: React.FC = () => {
   };
 
   return (
-    <div className="glass-panel relative rounded-2xl border border-slate-800/80 bg-slate-900/70 p-6 backdrop-blur-xl space-y-4">
+    <div className="glass-panel relative rounded-3xl border border-slate-800/80 bg-slate-900/70 p-6 backdrop-blur-xl space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div className="flex items-center space-x-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-            <Cpu className="h-5 w-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            <Cpu className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-base font-black text-white tracking-wide">DEVICE HARDWARE SPECIFICATIONS</h3>
-            <p className="text-xs text-slate-400 font-mono">Microcontroller & Sensor Node Configuration</p>
+            <h3 className="text-base font-black text-white tracking-wide">
+              HARDWARE SPECIFICATIONS
+            </h3>
+            <p className="text-xs text-slate-400 font-mono">Microcontroller & Harvester Node</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
         <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800/80">
-          <div className="text-slate-500 text-[10px] uppercase mb-1">Device ID</div>
+          <div className="text-slate-500 text-[10px] uppercase mb-1">Device UID</div>
           <div className="font-bold text-white text-sm">{deviceInfo.deviceId}</div>
         </div>
 
         <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800/80">
-          <div className="text-slate-500 text-[10px] uppercase mb-1">Wi-Fi Gateway</div>
-          <div className="font-bold text-cyan-300 text-sm">{deviceInfo.gateway}</div>
+          <div className="text-slate-500 text-[10px] uppercase mb-1">Microcontroller SoC</div>
+          <div className="font-bold text-cyan-300 text-sm">{deviceInfo.mcu}</div>
         </div>
 
         <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800/80">
-          <div className="text-slate-500 text-[10px] uppercase mb-1">Sensor Controller</div>
-          <div className="font-bold text-slate-200">{deviceInfo.sensorController}</div>
+          <div className="text-slate-500 text-[10px] uppercase mb-1">Energy Harvester PMIC</div>
+          <div className="font-bold text-emerald-400">{deviceInfo.pmic}</div>
         </div>
 
         <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800/80">
-          <div className="text-slate-500 text-[10px] uppercase mb-1">Energy Sensor Hardware</div>
-          <div className="font-bold text-emerald-400">{deviceInfo.sensor}</div>
+          <div className="text-slate-500 text-[10px] uppercase mb-1">Telemetry Sensor</div>
+          <div className="font-bold text-slate-200">{deviceInfo.sensor}</div>
         </div>
 
         <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800/80">
-          <div className="text-slate-500 text-[10px] uppercase mb-1">UART Communication</div>
-          <div className="font-bold text-slate-200">{deviceInfo.communication}</div>
+          <div className="text-slate-500 text-[10px] uppercase mb-1">Bio-Energy Source</div>
+          <div className="font-bold text-emerald-300">{deviceInfo.energySource}</div>
         </div>
 
         <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800/80">
-          <div className="text-slate-500 text-[10px] uppercase mb-1">Cloud Backend</div>
-          <div className="font-bold text-slate-200">{deviceInfo.cloudBackend}</div>
+          <div className="text-slate-500 text-[10px] uppercase mb-1">Storage Buffer</div>
+          <div className="font-bold text-slate-200">{deviceInfo.storageType}</div>
         </div>
       </div>
 
@@ -68,7 +69,7 @@ export const DeviceInfoCard: React.FC = () => {
             <Wifi className="h-4 w-4 text-emerald-400" />
             <span>Wi-Fi Signal Strength (RSSI):</span>
           </span>
-          <span className="font-bold text-emerald-400">{deviceInfo.rssi} dBm (Excellent)</span>
+          <span className="font-bold text-emerald-400">{deviceInfo.rssi} dBm (Excellent Signal)</span>
         </div>
 
         {/* Signal Bars Visualizer */}
@@ -80,7 +81,7 @@ export const DeviceInfoCard: React.FC = () => {
         </div>
 
         <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-slate-400 pt-2 border-t border-slate-800/60">
-          <div>IP ADDRESS: <span className="text-white font-bold">{deviceInfo.ipAddress}</span></div>
+          <div>IP: <span className="text-white font-bold">{deviceInfo.ipAddress}</span></div>
           <div>FIRMWARE: <span className="text-cyan-400 font-bold">{deviceInfo.firmwareVersion}</span></div>
           <div>UPTIME: <span className="text-emerald-400">{formatUptime(deviceInfo.uptimeSeconds)}</span></div>
         </div>

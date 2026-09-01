@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DAGITAB - Intelligent Energy Monitoring System",
-  description: "High-End Commercial IoT Energy Monitoring System Dashboard for DAGITAB",
+  title: "GREENCHARGE — Microbial Fuel Cell Energy-Harvesting Dashboard",
+  description: "Commercial-grade IoT energy-monitoring command center for Microbial Fuel Cell (MFC) power harvesting with ESP32-S3, INA219, TI BQ25570, and Supabase.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className="min-h-full flex flex-col">{children}</body>
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#06090e] text-slate-100">{children}</body>
     </html>
   );
 }

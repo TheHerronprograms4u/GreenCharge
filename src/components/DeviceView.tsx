@@ -13,17 +13,19 @@ import {
   RefreshCw,
   HardDrive,
   Code,
-  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
+import { HardwarePipelineHealth } from './HardwarePipelineHealth';
+import { DeviceInfoCard } from './DeviceInfoCard';
 
 export const DeviceView: React.FC = () => {
-  const { deviceInfo, connectionState, rawUartMessage, simulateIncomingData } = useEnergyData();
+  const { deviceInfo, connectionState, rawUartMessage, simulateIncomingData, loadEnabled } = useEnergyData();
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    '[SYSTEM INIT] ESP8266 NodeMCU v1.4.2 Booting...',
-    '[WIFI STATUS] Connected to DAGITAB_AP (RSSI: -52 dBm)',
-    '[UART INIT] SoftwareSerial RX:D1, TX:D2 @ 9600 Baud',
-    '[SENSOR CONNECTED] MAX471 Current & Voltage Sensor initialized',
-    '[SUPABASE REALTIME] Connected to WSS wss://supabase.co/realtime/v1',
+    '[BOOT] ESP32-S3 Dual-Core Xtensa LX7 initialized @ 240MHz',
+    '[I2C BUS 1] INA219 current/voltage monitor detected at 0x40',
+    '[PMIC INIT] TI BQ25570 boost converter & MPPT 80% reference active',
+    '[WIFI SEC] Connected to 802.11 b/g/n (RSSI: -58 dBm)',
+    '[SUPABASE REALTIME] Subscribed to energy_readings & device_control',
     `[UART RX] ${rawUartMessage}`,
   ]);
 
@@ -32,7 +34,7 @@ export const DeviceView: React.FC = () => {
     setTerminalLogs((prev) => [
       ...prev,
       `[UART RX] ${rawUartMessage}`,
-      `[SUPABASE POST] 200 OK (Device: ${deviceInfo.deviceId})`,
+      `[SUPABASE POST] 201 Created (device_id: ${deviceInfo.deviceId})`,
     ]);
   };
 
@@ -44,11 +46,11 @@ export const DeviceView: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2 text-emerald-400 font-mono text-xs font-bold mb-2">
               <Cpu className="h-4 w-4" />
-              <span>HARDWARE DIAGNOSTICS & SYSTEM ARCHITECTURE</span>
+              <span>HARDWARE DIAGNOSTICS & BIOCHEMICAL HARVESTING TOPOLOGY</span>
             </div>
-            <h1 className="text-3xl font-black text-white">Device & Gateway Control</h1>
+            <h1 className="text-3xl font-black text-white">Device & Hardware Architecture</h1>
             <p className="text-sm font-medium text-slate-400 mt-1">
-              Arduino UNO + MAX471 + ESP8266 Hardware Node Status: <span className="text-emerald-400 font-bold">{deviceInfo.deviceId}</span>
+              ESP32-S3 + INA219 + TI BQ25570 Harvester Node: <span className="text-emerald-400 font-bold">{deviceInfo.deviceId}</span>
             </p>
           </div>
 
@@ -58,105 +60,110 @@ export const DeviceView: React.FC = () => {
               className="flex items-center space-x-2 rounded-xl bg-emerald-500/20 px-4 py-2 text-xs font-mono font-bold text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
             >
               <RefreshCw className="h-4 w-4" />
-              <span>TRIGGER UART PULSE</span>
+              <span>DISPATCH TEST TELEMETRY</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Hardware Architecture Overview */}
+      {/* Hardware Architecture Overview Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Stage 1: Sensor & Controller */}
+        
+        {/* Stage 1: MFC & Sensor */}
         <div className="glass-panel rounded-2xl border border-slate-800 bg-slate-900/70 p-5 space-y-3">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <div className="flex items-center space-x-2">
-              <Zap className="h-5 w-5 text-emerald-400" />
-              <h3 className="font-bold text-sm text-white">Sensor Stage</h3>
+              <Sparkles className="h-5 w-5 text-emerald-400" />
+              <h3 className="font-bold text-sm text-white">MFC & Sensor Stage</h3>
             </div>
             <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
               OK
             </span>
           </div>
           <div className="space-y-1.5 text-xs font-mono text-slate-300">
-            <div>SENSOR MODULE: <span className="text-white font-bold">{deviceInfo.sensor}</span></div>
-            <div>CONTROLLER: <span className="text-cyan-300 font-bold">{deviceInfo.sensorController}</span></div>
-            <div>VOLTAGE PIN: <span className="text-slate-400">Analog Pin A0 (0 - 25V)</span></div>
-            <div>CURRENT PIN: <span className="text-slate-400">Analog Pin A1 (0 - 3A)</span></div>
-            <div>SHUNT RESISTOR: <span className="text-slate-400">35 mΩ Onboard Shunt</span></div>
+            <div>BIO-SOURCE: <span className="text-white font-bold">{deviceInfo.energySource}</span></div>
+            <div>SENSOR IC: <span className="text-cyan-300 font-bold">{deviceInfo.sensor}</span></div>
+            <div>BUS ADDRESS: <span className="text-slate-400">0x40 (I2C Fast Mode)</span></div>
+            <div>SHUNT: <span className="text-slate-400">0.100 Ω High-Side Resistor</span></div>
+            <div>MAX V/I RANGE: <span className="text-slate-400">0–32V / 0–3.2A</span></div>
           </div>
         </div>
 
-        {/* Stage 2: Gateway */}
+        {/* Stage 2: Harvester PMIC */}
+        <div className="glass-panel rounded-2xl border border-slate-800 bg-slate-900/70 p-5 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div className="flex items-center space-x-2">
+              <Zap className="h-5 w-5 text-amber-400" />
+              <h3 className="font-bold text-sm text-white">BQ25570 PMIC Stage</h3>
+            </div>
+            <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+              OK
+            </span>
+          </div>
+          <div className="space-y-1.5 text-xs font-mono text-slate-300">
+            <div>PMIC IC: <span className="text-white font-bold">{deviceInfo.pmic}</span></div>
+            <div>MPPT TRACKING: <span className="text-cyan-300 font-bold">80% VOC Reference</span></div>
+            <div>COLD-START: <span className="text-amber-400 font-bold">VIN_CS = 330 mV</span></div>
+            <div>STORAGE BUFFER: <span className="text-slate-400">{deviceInfo.storageType}</span></div>
+            <div>BUCK LOAD RAIL: <span className={loadEnabled ? 'text-emerald-400 font-bold' : 'text-slate-500 font-bold'}>{loadEnabled ? 'ENABLED (ON)' : 'GATED (OFF)'}</span></div>
+          </div>
+        </div>
+
+        {/* Stage 3: ESP32-S3 SoC & Cloud */}
         <div className="glass-panel rounded-2xl border border-slate-800 bg-slate-900/70 p-5 space-y-3">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <div className="flex items-center space-x-2">
               <Radio className="h-5 w-5 text-cyan-400" />
-              <h3 className="font-bold text-sm text-white">IoT Gateway</h3>
+              <h3 className="font-bold text-sm text-white">SoC & Cloud Gateway</h3>
             </div>
             <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
               OK
             </span>
           </div>
           <div className="space-y-1.5 text-xs font-mono text-slate-300">
-            <div>GATEWAY CHIP: <span className="text-white font-bold">{deviceInfo.gateway}</span></div>
-            <div>COMMUNICATION: <span className="text-cyan-300 font-bold">{deviceInfo.communication}</span></div>
-            <div>RX/TX PINS: <span className="text-slate-400">SoftwareSerial D1/D2</span></div>
-            <div>FIRMWARE: <span className="text-emerald-400 font-bold">{deviceInfo.firmwareVersion}</span></div>
+            <div>CONTROLLER: <span className="text-white font-bold">{deviceInfo.mcu}</span></div>
+            <div>NETWORK: <span className="text-emerald-400 font-bold">{deviceInfo.network} ({deviceInfo.rssi} dBm)</span></div>
             <div>IP CONFIG: <span className="text-slate-400">{deviceInfo.ipAddress}</span></div>
+            <div>FIRMWARE: <span className="text-cyan-400 font-bold">{deviceInfo.firmwareVersion}</span></div>
+            <div>CLOUD DB: <span className="text-emerald-400">{deviceInfo.cloudBackend}</span></div>
           </div>
         </div>
 
-        {/* Stage 3: Network & Cloud */}
-        <div className="glass-panel rounded-2xl border border-slate-800 bg-slate-900/70 p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <div className="flex items-center space-x-2">
-              <Wifi className="h-5 w-5 text-blue-400" />
-              <h3 className="font-bold text-sm text-white">Wi-Fi & Cloud</h3>
-            </div>
-            <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-              OK
-            </span>
-          </div>
-          <div className="space-y-1.5 text-xs font-mono text-slate-300">
-            <div>NETWORK: <span className="text-white font-bold">{deviceInfo.network}</span></div>
-            <div>RSSI SIGNAL: <span className="text-emerald-400 font-bold">{deviceInfo.rssi} dBm</span></div>
-            <div>CLOUD DB: <span className="text-cyan-300 font-bold">{deviceInfo.cloudBackend}</span></div>
-            <div>TABLE: <span className="text-slate-400">energy_readings</span></div>
-            <div>SECURITY: <span className="text-emerald-400">RLS Policies Enabled</span></div>
-          </div>
-        </div>
       </div>
 
-      {/* Hardware Pinout Schematic Diagram */}
+      {/* End-to-End Pipeline Health Monitor */}
+      <HardwarePipelineHealth />
+
+      {/* Detailed Technical Device Specifications & Wi-Fi */}
+      <DeviceInfoCard />
+
+      {/* Hardware Schematic Diagram */}
       <div className="glass-panel rounded-2xl border border-slate-800/80 bg-slate-900/70 p-6 space-y-4">
         <h3 className="text-base font-black text-white flex items-center space-x-2">
           <Code className="h-5 w-5 text-cyan-400" />
-          <span>ARDUINO UNO ➔ ESP8266 HARDWARE WIRING SCHEMATIC</span>
+          <span>ESP32-S3 + INA219 + TI BQ25570 MICROBIAL FUEL CELL SCHEMATIC</span>
         </h3>
-        
+
         <div className="rounded-xl bg-slate-950 p-4 border border-slate-800 font-mono text-xs overflow-x-auto">
-          <div className="text-slate-400 leading-relaxed whitespace-pre">
+          <div className="text-slate-300 leading-relaxed whitespace-pre">
 {`┌────────────────────────────────┐         ┌────────────────────────────────┐
-│          ARDUINO UNO           │         │         MAX471 SENSOR          │
-│                                │         │                                │
-│   Analog Pin A0  ──────────────┼─────────┤ RS+ / RS- (Voltage Sense)      │
-│   Analog Pin A1  ──────────────┼─────────┤ OUT (Current Sense)            │
-│   5V / GND       ──────────────┼─────────┤ VCC / GND                      │
-│                                │         └────────────────────────────────┘
-│   Digital Pin 3 (TX) ──────────┼───────┐
-│   Digital Pin 2 (RX) ──────────┼────┐  │
-└────────────────────────────────┘    │  │ 9600 Baud UART
-                                      │  │ DATA,Voltage,Current,Power
-                                      ▼  ▼
-                           ┌────────────────────────────────┐
-                           │      ESP8266 NODEMCU ESP-12E   │
-                           │                                │
-                           │   D1 (SoftwareSerial RX)       │
-                           │   D2 (SoftwareSerial TX)       │
-                           │                                │
-                           │   Wi-Fi 802.11 b/g/n (2.4GHz)   │
-                           │   HTTP / WSS POST to Supabase  │
-                           └────────────────────────────────┘`}
+│   MICROBIAL FUEL CELL (MFC)    │         │      INA219 POWER MONITOR      │
+│   (Soil / Sediment Bioreactor) │         │                                │
+│                                │         │   VIN+ / VIN- (Shunt Monitor)  │
+│   Anode (-) ───────────────────┼─────────┤   GND                          │
+│   Cathode (+) ─────────────────┼─────────┤   SDA / SCL (I2C Bus @ 0x40)   │
+└────────────────┬───────────────┘         └───────────────┬────────────────┘
+                 │                                         │
+                 ▼                                         ▼
+┌────────────────────────────────┐         ┌────────────────────────────────┐
+│      TI BQ25570 PMIC           │         │     ESP32-S3 DUAL-CORE SOC     │
+│   (Ultra-Low-Power Harvester)  │         │                                │
+│                                │         │   GPIO 8 (SDA) ────────────────┤
+│   VIN_DC (MFC Boost Input)     │         │   GPIO 9 (SCL) ────────────────┤
+│   VBAT (Supercap Rail ~3.3V)   │         │   GPIO 4 (VOUT_EN Gate Ctrl) ──┤
+│   VOUT_EN (Gated Buck Enable)  │◄────────┤   Wi-Fi 802.11 b/g/n           │
+│   VOUT (Switched System Load)  │         │   Supabase Realtime WSS Ingest │
+└────────────────────────────────┘         └────────────────────────────────┘`}
           </div>
         </div>
       </div>
@@ -166,9 +173,9 @@ export const DeviceView: React.FC = () => {
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center space-x-2">
             <Terminal className="h-5 w-5 text-emerald-400" />
-            <h3 className="text-base font-black text-white">LIVE UART SERIAL TERMINAL CONSOLE</h3>
+            <h3 className="text-base font-black text-white">LIVE UART / SERIAL LOG CONSOLE</h3>
           </div>
-          <span className="text-xs font-mono text-slate-500">COM3 @ 9600 BAUD</span>
+          <span className="text-xs font-mono text-slate-500">ESP32-S3 COM4 @ 115200 BAUD</span>
         </div>
 
         <div className="h-48 overflow-y-auto rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 space-y-1 border border-slate-800">

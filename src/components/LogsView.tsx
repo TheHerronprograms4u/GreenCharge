@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ActivityLogPanel } from './ActivityLogPanel';
-import { FileText, ShieldCheck } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 export const LogsView: React.FC = () => {
   return (
@@ -14,7 +14,7 @@ export const LogsView: React.FC = () => {
         </div>
         <h1 className="text-3xl font-black text-white">System Activity & Security Log</h1>
         <p className="text-sm font-medium text-slate-400 mt-1">
-          Historical record of telemetry sync events, hardware state shifts, and connection heartbeats
+          Historical telemetry records, BQ25570 remote load transitions, and database synchronization heartbeats
         </p>
       </div>
 
