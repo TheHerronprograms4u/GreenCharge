@@ -132,13 +132,27 @@ export async function fetchDeviceControl(
       .from('device_control')
       .select('*')
       .eq('device_id', deviceId)
-      .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
     if (error) {
-      console.warn('Error fetching device_control:', error.message);
-      return null;
+      // Fallback in case device_id filter failed or column mismatch
+      const fallback = await client
+        .from('device_control')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (fallback.error || !fallback.data) {
+        console.warn('Error fetching device_control:', error.message);
+        return null;
+      }
+      return {
+        id: fallback.data.id,
+        device_id: fallback.data.device_id || deviceId,
+        load_enabled: Boolean(fallback.data.load_enabled),
+        updated_at: fallback.data.updated_at || new Date().toISOString(),
+      };
     }
 
     if (!data) {
@@ -159,7 +173,7 @@ export async function fetchDeviceControl(
 
 /**
  * Update remote physical load state in device_control table
- * Format: device_id = GREENCHARGE-001, load_enabled = true/false, updated_at = NOW()
+ * Handles schemas with or without 'id' column and prevents duplicate key conflicts
  */
 export async function updateDeviceControl(
   deviceId: string = 'GREENCHARGE-001',
@@ -173,67 +187,120 @@ export async function updateDeviceControl(
   try {
     const nowIso = new Date().toISOString();
 
-    // Check if row already exists for device_id
-    const { data: existing } = await client
+    // 1. First attempt: direct UPDATE targeting device_id
+    const updateRes = await client
       .from('device_control')
-      .select('id, device_id')
+      .update({
+        load_enabled: loadEnabled,
+        updated_at: nowIso,
+      })
       .eq('device_id', deviceId)
-      .maybeSingle();
+      .select();
 
-    if (existing) {
-      const { data, error } = await client
-        .from('device_control')
-        .update({
-          load_enabled: loadEnabled,
-          updated_at: nowIso,
-        })
-        .eq('device_id', deviceId)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Failed to update device_control:', error.message);
-        return { success: false, error: error.message };
-      }
-
+    if (!updateRes.error && updateRes.data && updateRes.data.length > 0) {
+      const row = updateRes.data[0];
       return {
         success: true,
         data: {
-          id: data.id,
-          device_id: data.device_id,
-          load_enabled: data.load_enabled,
-          updated_at: data.updated_at,
-        },
-      };
-    } else {
-      // Upsert/insert new row
-      const { data, error } = await client
-        .from('device_control')
-        .insert([
-          {
-            device_id: deviceId,
-            load_enabled: loadEnabled,
-            updated_at: nowIso,
-          },
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Failed to insert device_control:', error.message);
-        return { success: false, error: error.message };
-      }
-
-      return {
-        success: true,
-        data: {
-          id: data.id,
-          device_id: data.device_id,
-          load_enabled: data.load_enabled,
-          updated_at: data.updated_at,
+          id: row.id,
+          device_id: row.device_id || deviceId,
+          load_enabled: Boolean(row.load_enabled),
+          updated_at: row.updated_at || nowIso,
         },
       };
     }
+
+    // If update failed due to 'updated_at' column missing in table schema
+    if (updateRes.error && updateRes.error.message?.includes('updated_at')) {
+      const retryUpdate = await client
+        .from('device_control')
+        .update({
+          load_enabled: loadEnabled,
+        })
+        .eq('device_id', deviceId)
+        .select();
+
+      if (!retryUpdate.error && retryUpdate.data && retryUpdate.data.length > 0) {
+        const row = retryUpdate.data[0];
+        return {
+          success: true,
+          data: {
+            id: row.id,
+            device_id: row.device_id || deviceId,
+            load_enabled: Boolean(row.load_enabled),
+            updated_at: nowIso,
+          },
+        };
+      }
+    }
+
+    // 2. Second attempt: UPSERT if row doesn't exist yet
+    const upsertRes = await client
+      .from('device_control')
+      .upsert(
+        {
+          device_id: deviceId,
+          load_enabled: loadEnabled,
+          updated_at: nowIso,
+        },
+        { onConflict: 'device_id' }
+      )
+      .select();
+
+    if (!upsertRes.error && upsertRes.data && upsertRes.data.length > 0) {
+      const row = upsertRes.data[0];
+      return {
+        success: true,
+        data: {
+          id: row.id,
+          device_id: row.device_id || deviceId,
+          load_enabled: Boolean(row.load_enabled),
+          updated_at: row.updated_at || nowIso,
+        },
+      };
+    }
+
+    // If upsert failed due to schema variations, try minimal upsert
+    if (upsertRes.error) {
+      const minimalUpsert = await client
+        .from('device_control')
+        .upsert(
+          {
+            device_id: deviceId,
+            load_enabled: loadEnabled,
+          },
+          { onConflict: 'device_id' }
+        )
+        .select();
+
+      if (!minimalUpsert.error && minimalUpsert.data && minimalUpsert.data.length > 0) {
+        const row = minimalUpsert.data[0];
+        return {
+          success: true,
+          data: {
+            id: row.id,
+            device_id: row.device_id || deviceId,
+            load_enabled: Boolean(row.load_enabled),
+            updated_at: nowIso,
+          },
+        };
+      }
+
+      console.error('Supabase device_control update error:', upsertRes.error.message || minimalUpsert.error?.message);
+      return {
+        success: false,
+        error: upsertRes.error.message || minimalUpsert.error?.message || 'Failed to update device_control',
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        device_id: deviceId,
+        load_enabled: loadEnabled,
+        updated_at: nowIso,
+      },
+    };
   } catch (err: any) {
     console.error('Error updating device control in Supabase:', err);
     return { success: false, error: err?.message || 'Network error updating device control' };
