@@ -77,7 +77,7 @@ export const ActivityLogPanel: React.FC = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `greencharge_audit_logs_${Date.now()}.csv`);
+    link.setAttribute('download', `dagitab_audit_logs_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

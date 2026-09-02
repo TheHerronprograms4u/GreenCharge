@@ -71,7 +71,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ activeTab, setActive
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xl font-black tracking-wider text-white">
-                GREEN<span className="text-emerald-400">CHARGE</span>
+                DAGI<span className="text-emerald-400">TAB</span>
               </span>
               <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[9px] font-mono font-bold text-emerald-400 border border-emerald-500/30">
                 MFC IoT

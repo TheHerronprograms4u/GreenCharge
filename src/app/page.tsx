@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { EnergyDataProvider } from '@/context/EnergyDataContext';
+import { EnergyDataProvider, useEnergyData } from '@/context/EnergyDataContext';
 import { HeaderNavbar } from '@/components/HeaderNavbar';
 import { ToastContainer } from '@/components/ToastContainer';
 import { DashboardView } from '@/components/DashboardView';
@@ -12,6 +12,7 @@ import { SettingsView } from '@/components/SettingsView';
 import { Zap, ShieldCheck, Sparkles, Radio, Cpu, Layers } from 'lucide-react';
 
 function MainContent() {
+  const { deviceId } = useEnergyData();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [mounted, setMounted] = useState<boolean>(false);
 
@@ -26,7 +27,7 @@ function MainContent() {
           <Zap className="h-6 w-6" />
         </div>
         <div className="text-xs text-slate-300 font-bold tracking-widest uppercase">
-          INITIALIZING GREENCHARGE COMMAND CENTER...
+          INITIALIZING DAGITAB COMMAND CENTER...
         </div>
       </div>
     );
@@ -57,7 +58,7 @@ function MainContent() {
               <Zap className="h-4 w-4" />
             </div>
             <div>
-              <span className="font-bold text-white tracking-wider">GREENCHARGE</span>
+              <span className="font-bold text-white tracking-wider">DAGITAB</span>
               <span className="ml-2 text-[10px] text-slate-400">
                 Microbial Fuel Cell Harvester • ESP32-S3 + INA219 + TI BQ25570 + Supabase
               </span>
@@ -67,7 +68,7 @@ function MainContent() {
           <div className="flex flex-wrap items-center space-x-3 sm:space-x-4 text-[11px]">
             <span className="flex items-center space-x-1 text-slate-400">
               <Radio className="h-3 w-3 text-cyan-400" />
-              <span>NODE: <strong className="text-slate-200">GREENCHARGE-001</strong></span>
+              <span>NODE: <strong className="text-slate-200">{deviceId}</strong></span>
             </span>
             <span>|</span>
             <span className="flex items-center space-x-1 text-slate-400">

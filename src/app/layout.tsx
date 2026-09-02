@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GREENCHARGE — Microbial Fuel Cell Energy-Harvesting Dashboard",
+  title: "DAGITAB — Microbial Fuel Cell Energy-Harvesting Dashboard",
   description: "Commercial-grade IoT energy-monitoring command center for Microbial Fuel Cell (MFC) power harvesting with ESP32-S3, INA219, TI BQ25570, and Supabase.",
 };
 

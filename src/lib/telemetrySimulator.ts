@@ -1,6 +1,6 @@
 import { EnergyReading } from '@/types/energy';
 
-export class GreenChargeTelemetrySimulator {
+export class DagitabTelemetrySimulator {
   private baseMfcVoltage: number = 0.785; // Microbial Fuel Cell raw voltage ~785 mV
   private baseStorageVoltage: number = 3.280; // Supercapacitor / Storage rail ~3.28 V
   private baseHarvestCurrent: number = 18.450; // INA219 current reading in mA
@@ -16,7 +16,7 @@ export class GreenChargeTelemetrySimulator {
    * Generate a realistic live reading from Microbial Fuel Cell + INA219 + BQ25570
    */
   public generateReading(
-    deviceId: string = 'GREENCHARGE-001',
+    deviceId: string = 'DAGITAB-001',
     loadEnabled: boolean = false
   ): {
     reading: EnergyReading;
@@ -38,7 +38,7 @@ export class GreenChargeTelemetrySimulator {
     // Power (P = V * I in mW): e.g. 0.785 V * 18.45 mA = 14.48 mW
     const power = Number((voltage * current).toFixed(2));
 
-    const rawUart = `GC-DATA,V=${voltage.toFixed(3)}V,I=${current.toFixed(3)}mA,P=${power.toFixed(2)}mW,LOAD=${loadEnabled ? '1' : '0'}`;
+    const rawUart = `DAGITAB-DATA,V=${voltage.toFixed(3)}V,I=${current.toFixed(3)}mA,P=${power.toFixed(2)}mW,LOAD=${loadEnabled ? '1' : '0'}`;
 
     const reading: EnergyReading = {
       id: `sim-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
@@ -56,7 +56,7 @@ export class GreenChargeTelemetrySimulator {
    * Seed realistic historical records for charts
    */
   public generateInitialHistory(
-    deviceId: string = 'GREENCHARGE-001',
+    deviceId: string = 'DAGITAB-001',
     count: number = 40,
     loadEnabled: boolean = false
   ): EnergyReading[] {
@@ -92,4 +92,4 @@ export class GreenChargeTelemetrySimulator {
   }
 }
 
-export const telemetrySimulator = new GreenChargeTelemetrySimulator();
+export const telemetrySimulator = new DagitabTelemetrySimulator();

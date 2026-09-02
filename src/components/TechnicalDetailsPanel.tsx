@@ -78,7 +78,7 @@ export const TechnicalDetailsPanel: React.FC = () => {
             <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800">
               <div className="text-[10px] text-slate-500 uppercase">Firmware Revision</div>
               <div className="font-bold text-slate-200 text-sm mt-0.5">{deviceInfo.firmwareVersion}</div>
-              <div className="text-[10px] text-slate-400 mt-1">GreenCharge RTOS Image</div>
+              <div className="text-[10px] text-slate-400 mt-1">DAGITAB RTOS Image</div>
             </div>
 
             <div className="rounded-xl bg-slate-950/80 p-3 border border-slate-800">

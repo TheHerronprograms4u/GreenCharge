@@ -5,8 +5,8 @@ let cachedClient: SupabaseClient | null = null;
 
 export function getSupabaseCredentials(): { url: string; key: string } {
   if (typeof window !== 'undefined') {
-    const customUrl = localStorage.getItem('GREENCHARGE_SUPABASE_URL') || localStorage.getItem('DAGITAB_SUPABASE_URL');
-    const customKey = localStorage.getItem('GREENCHARGE_SUPABASE_ANON_KEY') || localStorage.getItem('DAGITAB_SUPABASE_ANON_KEY');
+    const customUrl = localStorage.getItem('DAGITAB_SUPABASE_URL') || localStorage.getItem('GREENCHARGE_SUPABASE_URL');
+    const customKey = localStorage.getItem('DAGITAB_SUPABASE_ANON_KEY') || localStorage.getItem('GREENCHARGE_SUPABASE_ANON_KEY');
     if (customUrl && customKey) {
       return { url: customUrl, key: customKey };
     }
@@ -50,7 +50,7 @@ export function resetSupabaseClient(): void {
  * Fetch latest telemetry records from energy_readings table
  */
 export async function fetchLatestReadings(
-  deviceId: string = 'GREENCHARGE-001',
+  deviceId: string = 'DAGITAB-001',
   limit: number = 100
 ): Promise<EnergyReading[]> {
   const client = getSupabaseClient();
@@ -99,7 +99,7 @@ export async function insertEnergyReading(
   try {
     const { error } = await client.from('energy_readings').insert([
       {
-        device_id: reading.device_id || 'GREENCHARGE-001',
+        device_id: reading.device_id || 'DAGITAB-001',
         voltage: reading.voltage,
         current: reading.current,
         power: reading.power,
@@ -122,7 +122,7 @@ export async function insertEnergyReading(
  * Fetch remote device control state from device_control table
  */
 export async function fetchDeviceControl(
-  deviceId: string = 'GREENCHARGE-001'
+  deviceId: string = 'DAGITAB-001'
 ): Promise<DeviceControl | null> {
   const client = getSupabaseClient();
   if (!client) return null;
@@ -176,7 +176,7 @@ export async function fetchDeviceControl(
  * Handles schemas with or without 'id' column and prevents duplicate key conflicts
  */
 export async function updateDeviceControl(
-  deviceId: string = 'GREENCHARGE-001',
+  deviceId: string = 'DAGITAB-001',
   loadEnabled: boolean
 ): Promise<{ success: boolean; data?: DeviceControl; error?: string }> {
   const client = getSupabaseClient();
@@ -308,14 +308,14 @@ export async function updateDeviceControl(
 }
 
 export const SUPABASE_SQL_SETUP = `-- ==============================================================================
--- GREENCHARGE IoT Energy-Harvesting System — Supabase SQL Setup Script
+-- DAGITAB IoT Energy-Harvesting System — Supabase SQL Setup Script
 -- Compatible with ESP32-S3 + INA219 + TI BQ25570 Microbial Fuel Cell Harvester
 -- ==============================================================================
 
 -- 1. Create energy_readings table for real-time harvested telemetry
 CREATE TABLE IF NOT EXISTS public.energy_readings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id TEXT NOT NULL DEFAULT 'GREENCHARGE-001',
+    device_id TEXT NOT NULL DEFAULT 'DAGITAB-001',
     voltage NUMERIC(10, 4) NOT NULL, -- Voltage in Volts (e.g. 0.7850 V or 3.2500 V)
     current NUMERIC(10, 4) NOT NULL, -- Current in mA (e.g. 18.4500 mA)
     power NUMERIC(10, 4) NOT NULL,   -- Power in mW (e.g. 14.4832 mW)
@@ -343,14 +343,14 @@ WITH CHECK (true);
 -- 2. Create device_control table for BQ25570 Remote Physical Load Switching
 CREATE TABLE IF NOT EXISTS public.device_control (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id TEXT NOT NULL UNIQUE DEFAULT 'GREENCHARGE-001',
+    device_id TEXT NOT NULL UNIQUE DEFAULT 'DAGITAB-001',
     load_enabled BOOLEAN NOT NULL DEFAULT false,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Seed initial control row for primary hardware node
 INSERT INTO public.device_control (device_id, load_enabled, updated_at)
-VALUES ('GREENCHARGE-001', false, timezone('utc'::text, now()))
+VALUES ('DAGITAB-001', false, timezone('utc'::text, now()))
 ON CONFLICT (device_id) DO NOTHING;
 
 -- Enable RLS for device_control

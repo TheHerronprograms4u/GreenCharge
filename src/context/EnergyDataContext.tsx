@@ -70,7 +70,7 @@ interface EnergyDataContextType {
 const EnergyDataContext = createContext<EnergyDataContextType | undefined>(undefined);
 
 export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [deviceId, setDeviceId] = useState<string>('GREENCHARGE-001');
+  const [deviceId, setDeviceId] = useState<string>('DAGITAB-001');
   const [freshnessTimeoutSec, setFreshnessTimeoutSec] = useState<number>(8);
   const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>('INITIALIZING');
@@ -87,7 +87,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [loadStatusMessage, setLoadStatusMessage] = useState<string>('Load OFF');
   const [lastControlSync, setLastControlSync] = useState<Date | null>(null);
 
-  const [rawUartMessage, setRawUartMessage] = useState<string>('GC-DATA,V=0.785V,I=18.450mA,P=14.48mW,LOAD=0');
+  const [rawUartMessage, setRawUartMessage] = useState<string>('DAGITAB-DATA,V=0.785V,I=18.450mA,P=14.48mW,LOAD=0');
   const [supabaseStatus, setSupabaseStatus] = useState<'CONNECTED' | 'DISCONNECTED' | 'UNCONFIGURED'>('UNCONFIGURED');
 
   // Toasts
@@ -113,9 +113,9 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       id: 'log-1',
       timestamp: new Date(Date.now() - 45000).toISOString(),
       type: 'info',
-      title: 'GreenCharge Core Online',
+      title: 'DAGITAB Core Online',
       message: 'Microbial Fuel Cell (MFC) Energy Monitoring Architecture initialized.',
-      deviceId: 'GREENCHARGE-001',
+      deviceId: 'DAGITAB-001',
     },
     {
       id: 'log-2',
@@ -123,7 +123,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       type: 'success',
       title: 'Telemetry Stream Initialized',
       message: 'ESP32-S3 + INA219 sensor interface synchronized with TI BQ25570 PMIC.',
-      deviceId: 'GREENCHARGE-001',
+      deviceId: 'DAGITAB-001',
     },
   ]);
 
@@ -206,7 +206,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     },
     {
       id: 'dashboard',
-      name: 'GreenCharge Command Center',
+      name: 'DAGITAB Command Center',
       tech: 'Next.js Turbopack',
       status: 'ONLINE',
       latencyMs: 2,
@@ -217,7 +217,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Technical Device Specifications
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
-    deviceId: 'GREENCHARGE-001',
+    deviceId: 'DAGITAB-001',
     mcu: 'ESP32-S3-WROOM-1 (Xtensa LX7 @ 240MHz)',
     sensor: 'Texas Instruments INA219 I2C (0.1Ω Shunt, 12-bit ADC)',
     pmic: 'Texas Instruments BQ25570 Ultra-Low-Power Boost & Nanopower Buck',
@@ -255,7 +255,7 @@ export const EnergyDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setRawUartMessage(uartString);
       } else {
         setRawUartMessage(
-          `GC-DATA,V=${reading.voltage.toFixed(3)}V,I=${reading.current.toFixed(3)}mA,P=${reading.power.toFixed(2)}mW,LOAD=${loadEnabled ? '1' : '0'}`
+          `DAGITAB-DATA,V=${reading.voltage.toFixed(3)}V,I=${reading.current.toFixed(3)}mA,P=${reading.power.toFixed(2)}mW,LOAD=${loadEnabled ? '1' : '0'}`
         );
       }
 
